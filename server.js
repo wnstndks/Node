@@ -4,6 +4,8 @@ const app = express();
 
 // 폴더를 server.js에 등록해두면 폴더안의파일들 html에서 사용가능
 app.use(express.static(__dirname + "/public"));
+//ejs 세팅
+app.set('view engine','ejs')
 
 // mongodb연결하기 위해 세팅하는 라이브러
 const { MongoClient } = require("mongodb");
@@ -76,3 +78,34 @@ app.get("/about", (요청, 응답) => {
 
 // 유저가 데이터를 db에 저장 및 출력하려고 할 때 이 데이터가 제대로 된건지 검사가 필요함
 // 따라서 서버가 이런 검사하는 것들을 담당
+
+
+app.get('/list',async(요청,응답)=>{
+  let result= await db.collection('post').find().toArray();
+  console.log(result);
+  // 응답은 한개만 가능함
+  // 응답.send('DB에 있던 게시');
+  // 응답.send(result[0].title);
+
+  // 유저에게 ejs 파일 보내는법
+  // 서버 데이터를 ejs파일에 넣으려면 1.ejs 파일로 데이터 전송
+  // ejs 파일안에서 <%=데이터이름%>
+  응답.render('list.ejs',{글목록: result})
+})
+
+// 처리가 오래걸리는 코드는 처리완료 기다리지 않고 바로 다음줄 실행
+// =>  await - 다음줄 실행하지 말고 기다려달라는 문법 - 실행완료될때까지 기다려줌
+// 아니면 then을 사용해도 됨
+// 컬렉션의 모든 document 출력하는 법 db.collection('post').find().toArray();
+// await은 무슨 DB를 써도 사용방법은 다 비슷함
+// [] : array ,{} : object
+
+// html 파일에 서버데이터 넣기 - template engine 쓰기 -> ejs 사용 => ejs 파일 만들기 - views 폴더 안에 만
+
+
+app.get('/time',async(요청,응답)=>{
+  let time = new Date();
+  console.log(time);
+
+  응답.render('time.ejs',{현재시간: time})
+})
