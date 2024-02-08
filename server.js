@@ -5,7 +5,11 @@ const app = express();
 // 폴더를 server.js에 등록해두면 폴더안의파일들 html에서 사용가능
 app.use(express.static(__dirname + "/public"));
 //ejs 세팅
-app.set('view engine','ejs')
+app.set("view engine", "ejs");
+
+// 요청.body 쓰려면 이 두줄 필요
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // mongodb연결하기 위해 세팅하는 라이브러
 const { MongoClient } = require("mongodb");
@@ -49,8 +53,8 @@ app.get("/", (요청, 응답) => {
 // })
 
 app.get("/news", (요청, 응답) => {
-    db.collection('post').insertOne({title:'어쩌구'})
-    // 응답.send("오늘 비옴");
+  db.collection("post").insertOne({ title: "어쩌구" });
+  // 응답.send("오늘 비옴");
 });
 
 // => : 은 function과 같은 기능(함수 문법),  콜백함수 - 다른함수 파라미터에 들어가는 함수자
@@ -79,9 +83,8 @@ app.get("/about", (요청, 응답) => {
 // 유저가 데이터를 db에 저장 및 출력하려고 할 때 이 데이터가 제대로 된건지 검사가 필요함
 // 따라서 서버가 이런 검사하는 것들을 담당
 
-
-app.get('/list',async(요청,응답)=>{
-  let result= await db.collection('post').find().toArray();
+app.get("/list", async (요청, 응답) => {
+  let result = await db.collection("post").find().toArray();
   console.log(result);
   // 응답은 한개만 가능함
   // 응답.send('DB에 있던 게시');
@@ -91,8 +94,8 @@ app.get('/list',async(요청,응답)=>{
   // 서버 데이터를 ejs파일에 넣으려면 1.ejs 파일로 데이터 전송
   // ejs 파일안에서 <%=데이터이름%>
 
-  응답.render('list.ejs',{글목록: result})
-})
+  응답.render("list.ejs", { 글목록: result });
+});
 
 // 처리가 오래걸리는 코드는 처리완료 기다리지 않고 바로 다음줄 실행
 // =>  await - 다음줄 실행하지 말고 기다려달라는 문법 - 실행완료될때까지 기다려줌
@@ -103,14 +106,12 @@ app.get('/list',async(요청,응답)=>{
 
 // html 파일에 서버데이터 넣기 - template engine 쓰기 -> ejs 사용 => ejs 파일 만들기 - views 폴더 안에 만
 
-
-app.get('/time',async(요청,응답)=>{
+app.get("/time", async (요청, 응답) => {
   let time = new Date();
   console.log(time);
 
-  응답.render('time.ejs',{현재시간: time})
-})
-
+  응답.render("time.ejs", { 현재시간: time });
+});
 
 // 서버란? 요청이 들어오면 그걸 처리해주는 간단한 프로그램일 뿐
 // 유저가 서버에게 요청을 대충하면 안되고 정확한 형식으로 요청해야함 -
@@ -134,13 +135,41 @@ app.get('/time',async(요청,응답)=>{
 // 3.요청끼리 독립적으로 처리되기
 // 4. 요청은 캐싱이 가능해야 함 - 자주 수신되는 자료들은 요청 날리지 않고 하드에 저장해놓고 쓰기
 
-
-
 // 기능을 만들라고 했을 때 프로그래머들은 1. 기능이 어떤 식으로 동작하는지 한글로 상세히 정리 2. 한글을 코드로 번역
 // 글작성 기능? -> 어떤 식으로 동작하는지 한글로 상세히 적기 => 유저가 작성한 글을 DB에 저장해주기 + 중간에 서버가 검사할 수 있도록
 // 1. 글작성페이지에서 글 써서 서버로 전송 2. 서버는 글을 검사 3. 이상없으면 DB에 저장
-app.get('/write',async(요청,응답)=>{
-  
-  응답.render('write.ejs')
-})
+app.get("/write", async (요청, 응답) => {
+  응답.render("write.ejs");
+});
 
+app.post("/add", async (요청, 응답) => {
+  console.log(요청.body);
+
+  
+
+  // 에러시 다른 코드 실행은 try/catch
+
+  try{
+    // 여기 코드 실행해보고
+    // - 예외처리하는 방법
+  // 제목이 비어있으면 DB저장 X
+  // 유저 글 검사하려면 if/else
+  if (요청.body.title == "") {
+    응답.send("빈칸읻다 임마");
+  } else {
+    //글을 DB에 저장
+    // 자료는 object 형식으로 넣어야 한다.
+    await db
+      .collection("post")
+      .insertOne({ title: "요청.body.title", content: "요청.body.content" });
+    // 유저에게 응답 - 서버 기능이 끝나면
+    // 특정페이지로 이동시키기
+    응답.redirect("/list");
+  }
+  } catch(e){ //에러나면 이 코드 실행
+    
+    console.log(e)
+    응답.status(500).send('서버 에러남')
+  }
+
+});
