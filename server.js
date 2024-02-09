@@ -145,8 +145,6 @@ app.get("/write", async (요청, 응답) => {
 app.post("/add", async (요청, 응답) => {
   console.log(요청.body);
 
-  
-
   // 에러시 다른 코드 실행은 try/catch
 
   try{
