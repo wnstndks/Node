@@ -11,8 +11,8 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// mongodb연결하기 위해 세팅하는 라이브러
-const { MongoClient } = require("mongodb");
+// mongodb연결하기 위해 세팅하는 라이브러리
+const { MongoClient, ObjectId } = require("mongodb");
 
 let db;
 const url =
@@ -145,29 +145,64 @@ app.get("/write", async (요청, 응답) => {
 app.post("/add", async (요청, 응답) => {
   console.log(요청.body);
 
-  // 에러시 다른 코드 실행은 try/catch
+  // 에러시 다른 코드 실행은 try/catch => 어떤 코드에서 에러가 날수 있는 코드들은 try catch로 감싸주는 게 좋음
 
-  try{
+  try {
     // 여기 코드 실행해보고
     // - 예외처리하는 방법
-  // 제목이 비어있으면 DB저장 X
-  // 유저 글 검사하려면 if/else
-  if (요청.body.title == "") {
-    응답.send("빈칸읻다 임마");
-  } else {
-    //글을 DB에 저장
-    // 자료는 object 형식으로 넣어야 한다.
-    await db
-      .collection("post")
-      .insertOne({ title: "요청.body.title", content: "요청.body.content" });
-    // 유저에게 응답 - 서버 기능이 끝나면
-    // 특정페이지로 이동시키기
-    응답.redirect("/list");
+    // 제목이 비어있으면 DB저장 X
+    // 유저 글 검사하려면 if/else
+    if (요청.body.title == "") {
+      // 여러가지 예외 상황 처리해주는 게 좋음
+      // 내용 빈칸, 제목 길면, 제목에 특수기호 쓰면
+      응답.send("빈칸이다 임마, 제목 입력해");
+    } else {
+      //글을 DB에 저장
+      // 자료는 object 형식으로 넣어야 한다.
+      await db
+        .collection("post")
+        .insertOne({ title: 요청.body.title, content: 요청.body.content });
+      // 유저에게 응답 - 서버 기능이 끝나면 => 메시지 또는 특정페이지로 이동시키기
+      응답.redirect("/list");
+    }
+  } catch (e) {
+    //에러나면 이 코드 실행
+    // 에러메시지 출력
+    console.log(e);
+    // 에러시 에러코드 전송해주면 좋음 - status 이용
+    응답.status(500).send("서버 에러남");
   }
-  } catch(e){ //에러나면 이 코드 실행
-    
-    console.log(e)
-    응답.status(500).send('서버 에러남')
-  }
-
 });
+
+// 한글로 기능설명을 어떻게 하는지 모르겠다 - 기능이 어떻게 돌아가는지 모르겠다 -> 다른 페이지 참고
+//상세페이지 기능?
+// 1. 유저가 /detail/어쩌구에 접속하면
+// 2. {_id : 어쩌구}글을 DB에서 찾아
+// 3. ejs 파일에 박아서 보내줌
+
+// /detail/글번호 입력시 해당 글번호가진 글의 상세페이지 보여주기
+// URL 파라미터 문법 사용하면 비슷한 URL 가진  API 만들필요없음
+
+// /detail뒤에 유저가 이 자리에 아무문자나 입력시 이 안의 코드 실행
+app.get("/detail/:id", async (요청, 응답) => {
+  try {
+    // await db.collection('post').findOne(데이터) -이런 데이터 가진 document 1개 찾아옴
+    // await db.collection('post').find().toArray 모든 document 다가져옴
+    // 요청.params 안에 유저가 입력한 정보가 잘 들어있음
+    let result = await db
+      .collection("post")
+      .findOne({ _id: new ObjectId(요청.params.id) });
+    // 응답.render('detail.ejs') => 같은 페이지 보여주는 거 아닌가?
+    console.log(result);
+    if(result==null){
+      응답.status(404).send('이상한 url입력함')
+    }
+    응답.render("detail.ejs", { result: result }); //이런식으로 전송할 자료를 보낼수 있음 그래서 아이디별 내용들을 ejs 파일 보낼수 있음
+  } catch (e) {
+    console.log(e);
+    // status(5xx) - 서버문제, status(4xx) - 유저문
+    응답.status(404).send('이상한 url 입력했다 임마')
+  }
+});
+
+// 그런데 글 id를 어떻게 입력하겠어 -> 링크만들어야
