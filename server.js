@@ -1,6 +1,10 @@
 // express 라이브러리 사용하겠다는 뜻
 const express = require("express");
 const app = express();
+// form 써서 PUT DELETE 요청하는 법
+const methodOverride= require('method-override')
+
+app.use(methodOverride('_method'))
 
 // 폴더를 server.js에 등록해두면 폴더안의파일들 html에서 사용가능
 app.use(express.static(__dirname + "/public"));
@@ -205,4 +209,40 @@ app.get("/detail/:id", async (요청, 응답) => {
   }
 });
 
-// 그런데 글 id를 어떻게 입력하겠어 -> 링크만들어야
+// 수정기능은 1. 수정버튼 누르면 수정페이지로 2. 수정페이지엔 기존 글이 채워져있음 3. 전송누르면 입력한 내용으로 DB 글 수정
+// URL 파라미터 쓰면 비슷한 URL의 여러 API 여러개 필요없
+app.get('/edit/:id',async(요청, 응답)=>{
+  //db에 있는 document 수정하고 싶으면 updateOne()
+  // db.collection('post').updateOne({어떤document를 찾아서},{$set:{어떤내용으로 수정할건지}})
+  //서버에서 정보를 찾을수 없으면 유저에게 보내라고하거나/ DB에서 꺼내보거
+  let result = await db.collection('post').findOne({_id : new ObjectId(요청.params.id) })
+  응답.render('edit.ejs',{result :  result});
+});
+
+app.put('/edit',async(요청, 응답)=>{
+  
+  // set은 덮어쓰기 연산자 ,inc는 기존값에 +/- 연산자 ,mul : 기존값 * 연산자 , unset : 필드값 삭제 
+  // 동시에 여러개 document 수정은? ->updateMany
+  await db.collection('post').updateMany({_id:1},{$inc : {like:+1}})
+
+  // 특정 조건식 사용가능 - like 항목이 10이상인 document 전부 수정? gt - greater than 초과인것 , gte - 이상 등등 -> filtering도 가능함
+  // await db.collection('post').updateMany({like : {$gt: 10}},{$inc : {like:+1}})
+
+  // try {
+  //   if (요청.body.title == "" || 요청.body.content == "" ) {
+  //     응답.send("빈칸이다 임마, 다시 입력해");
+  //   } else {
+  //     //서버에 없는 정보는 유저에게 보내라고 하거나/ DB에서 출력해보거
+  //     await db
+  //       .collection("post")
+  //       .updateOne({ _id: new ObjectId(요청.body.id) },  { $set: { title: 요청.body.title, content: 요청.body.content }});
+  //       // updateOne() 추가사용법
+
+  //     응답.redirect("/list");
+  //   }
+  // } catch (e) {
+  //   console.log(e);
+  //   응답.status(500).send("서버 에러남");
+  // }
+
+});
