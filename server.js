@@ -2,9 +2,9 @@
 const express = require("express");
 const app = express();
 // form 써서 PUT DELETE 요청하는 법
-const methodOverride= require('method-override')
+const methodOverride = require("method-override");
 
-app.use(methodOverride('_method'))
+app.use(methodOverride("_method"));
 
 // 폴더를 server.js에 등록해두면 폴더안의파일들 html에서 사용가능
 app.use(express.static(__dirname + "/public"));
@@ -198,32 +198,33 @@ app.get("/detail/:id", async (요청, 응답) => {
       .findOne({ _id: new ObjectId(요청.params.id) });
     // 응답.render('detail.ejs') => 같은 페이지 보여주는 거 아닌가?
     console.log(result);
-    if(result==null){
-      응답.status(404).send('이상한 url입력함')
+    if (result == null) {
+      응답.status(404).send("이상한 url입력함");
     }
     응답.render("detail.ejs", { result: result }); //이런식으로 전송할 자료를 보낼수 있음 그래서 아이디별 내용들을 ejs 파일 보낼수 있음
   } catch (e) {
     console.log(e);
     // status(5xx) - 서버문제, status(4xx) - 유저문
-    응답.status(404).send('이상한 url 입력했다 임마')
+    응답.status(404).send("이상한 url 입력했다 임마");
   }
 });
 
 // 수정기능은 1. 수정버튼 누르면 수정페이지로 2. 수정페이지엔 기존 글이 채워져있음 3. 전송누르면 입력한 내용으로 DB 글 수정
 // URL 파라미터 쓰면 비슷한 URL의 여러 API 여러개 필요없
-app.get('/edit/:id',async(요청, 응답)=>{
+app.get("/edit/:id", async (요청, 응답) => {
   //db에 있는 document 수정하고 싶으면 updateOne()
   // db.collection('post').updateOne({어떤document를 찾아서},{$set:{어떤내용으로 수정할건지}})
   //서버에서 정보를 찾을수 없으면 유저에게 보내라고하거나/ DB에서 꺼내보거
-  let result = await db.collection('post').findOne({_id : new ObjectId(요청.params.id) })
-  응답.render('edit.ejs',{result :  result});
+  let result = await db
+    .collection("post")
+    .findOne({ _id: new ObjectId(요청.params.id) });
+  응답.render("edit.ejs", { result: result });
 });
 
-app.put('/edit',async(요청, 응답)=>{
-  
-  // set은 덮어쓰기 연산자 ,inc는 기존값에 +/- 연산자 ,mul : 기존값 * 연산자 , unset : 필드값 삭제 
+app.put("/edit", async (요청, 응답) => {
+  // set은 덮어쓰기 연산자 ,inc는 기존값에 +/- 연산자 ,mul : 기존값 * 연산자 , unset : 필드값 삭제
   // 동시에 여러개 document 수정은? ->updateMany
-  await db.collection('post').updateMany({_id:1},{$inc : {like:+1}})
+  await db.collection("post").updateMany({ _id: 1 }, { $inc: { like: +1 } });
 
   // 특정 조건식 사용가능 - like 항목이 10이상인 document 전부 수정? gt - greater than 초과인것 , gte - 이상 등등 -> filtering도 가능함
   // await db.collection('post').updateMany({like : {$gt: 10}},{$inc : {like:+1}})
@@ -244,5 +245,21 @@ app.put('/edit',async(요청, 응답)=>{
   //   console.log(e);
   //   응답.status(500).send("서버 에러남");
   // }
-
 });
+
+//글 삭제 기능
+// 글 삭제버튼 누르면 서버로 요청, 서버는 확인 후 해당 글 DB에서 삭제
+app.delete("/delete", async (요청, 응답) => {
+  await db
+    .collection("post")
+    .deleteOne(
+      { _id: new ObjectId(요청.query.docid) }
+    );
+    // ajax 요청 사용시 응답.redirect, 응답.render 사용안하는게 나
+    응답.send('삭제완료')
+});
+
+// app.post('/abc:id',async(요청, 응답)=>{
+// // URL 파라미터 이용 서버로 내이름 전송
+//   console.log(요청.params)
+// })

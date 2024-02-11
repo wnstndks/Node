@@ -1,39 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="/main.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="/main.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
+
 <body class="grey-bg">
 
-    <!-- include() 쓰면 다른 ejs 파일에 있던 html 복사해올수 있음 -->
-    <!-- 이 파일에 있던 html 복사해옴 -->
-    <%- include('nav.ejs') %>
+  <!-- include() 쓰면 다른 ejs 파일에 있던 html 복사해올수 있음 -->
+  <!-- 이 파일에 있던 html 복사해옴 -->
+  <%- include('nav.ejs') %>
     <!-- 위에 < % - include같이 특수한 문법가져다 쓸때 -->
-    
+
     <!-- 서버사이드 렌더링 - html을 서버에서 데이터를 보낼때 미리 자리를 채워서 유저에게보내는것 -->
 
     <!-- 클라이언트 사이드 렌더링 - 서버에서 빈 html + 데이터를 보내고 유저 브라우저에서 html 생성하는것 -->
     <!-- html 사이에 array object 넣으면 깨짐 -> JSON형태로 바꾸어야함 -->
     <!-- < % = JSON.stringify(글목록) %> -->
-    
+
     <div class="white-bg">
-    <!-- ejs 파일 안에서 자바스크립트 문법 생성 가능 아무데서나 가능함 -->  
-    <% for (let i=0; i<글목록.length; i++){%>
-      <!--위에 그냥 < % 는 html 사이에 자바스크립트 문법 쓸  -->
-      <div class="list-box">
-        <!-- 밑에 < % = 는 이 안에 있는 데이터가 html 형식일 경우에 실제 html 태그처럼 나오는게 아니라 문자처럼 바꿔서 만들어줌 < % -는 실제 html이 렌더링되어 나옴  -->
-        <!-- 그런데 글 id를 어떻게 입력하겠어 -> 링크만들어야 -->
-        <h4><a href='/detail/<%=글목록[i]._id%>'><%= 글목록[i].title %></a>
-        <a href="/edit/<%=글목록[i]._id%>">✏️</a>
-        </h4>
-        <p><%= 글목록[i].content %></p>
-      </div>
-    <% } %>
-    </div> 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+      <!-- ejs 파일 안에서 자바스크립트 문법 생성 가능 아무데서나 가능함 -->
+      <% for (let i=0; i<글목록.length; i++){%>
+        <!--위에 그냥 < % 는 html 사이에 자바스크립트 문법 쓸  -->
+        <div class="list-box">
+          <!-- 밑에 < % = 는 이 안에 있는 데이터가 html 형식일 경우에 실제 html 태그처럼 나오는게 아니라 문자처럼 바꿔서 만들어줌 < % -는 실제 html이 렌더링되어 나옴  -->
+          <!-- 그런데 글 id를 어떻게 입력하겠어 -> 링크만들어야 -->
+          <h4><a href='/detail/<%=글목록[i]._id%>'>
+              <%= 글목록[i].title %>
+            </a>
+            <a href="/edit/<%=글목록[i]._id%>">✏️</a>
+            <!-- html에 _id 숨겨놨다가 가져오기 : data-이름 -->
+            <span class="delete" data-id="<%=글목록[i]._id%>">🗑️</span>
+          </h4>
+          <p>
+            <%= 글목록[i].content %>
+          </p>
+        </div>
+        <% } %>
+    </div>
+
+    <!-- 삭제버튼 누르면 ajax써서 서버로 요청 -->
+    <script>
+
+
+      document.querySelectorAll('.delete')[0].addEventListener('click', function () {
+
+        // 서버에 삭제 요청 날리기 - ajax이용 => 새로고침없이도 get요청이용 가능
+        // fetch('/url~~', {
+        //   // 이건 POST요청하는 법
+        //   method : 'POST',
+
+        //   // ajax로 데이터요청은 
+        //   header : {
+        //     'Content-Type' : 'application/json'
+        //   },
+        //   body : '데이터전송~~'         
+        // })
+
+
+        // e.target.dataset.id를 < % = 글목록[0]._id % >이거 대신에 넣어주는게 좋음
+        // script 안에서 ejs 문법은 문자안에 담아야함
+        fetch('/delete?docid=' + '<%=글목록[0]._id %>', {
+          method: 'DELETE',
+        })
+      })
+
+
+    </script>
+
+    <!-- 서버로 데이터보내는 방법 - form, ajax, query string, URL parameter - server에서 :id 이런식으로  -->
+
+    <!-- fetch('/abc?데이터이름=데이터값',{
+      //이런 이름으로 데이터값이 전송이 됨
+    },
+        }) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"></script>
 </body>
+
 </html>
