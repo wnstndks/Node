@@ -44,9 +44,12 @@
         <% } %>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <!-- 삭제버튼 누르면 ajax써서 서버로 요청 -->
     <script>
 
+    // axios.get('/URL').then((r)=>{ console.log(r) })
 
       for (var i = 0; i < '<%-글목록.length%>'; i++) {
         document.querySelectorAll('.delete')[i].addEventListener('click', function (e) {
@@ -66,12 +69,34 @@
 
           // e.target.dataset.id를 < % = 글목록[0]._id % >이거 대신에 넣어주는게 좋음
           // script 안에서 ejs 문법은 문자안에 담아야함
+          // 늦게 처리하는 함수 붙일때 이렇게 사용
           fetch('/delete?docid=' + e.target.dataset.id, {
             method: 'DELETE'
           })
+            // 서버에서 보내는게 문자일경우 text,  array나 object일경우 JSON
+            .then((r) => r.text())
+            .then((r) => {
+              e.target.parentElement.parentElement.style.display='none'
+
+            })
+
         })
       }
 
+      fetch('/URL')
+        .then((r) => {
+          if (r.status == 200) {
+            return r.json()
+          } else {
+            //서버가 에러코드전송시 실행할코드
+          }
+        })
+        .then((result) => {
+          //성공시 실행할코드
+        }).catch((error) => {
+          //인터넷문제 등으로 실패시 실행할코드
+          console.log(error)
+        })
     </script>
 
     <!-- 서버로 데이터보내는 방법 - form, ajax, query string, URL parameter - server에서 :id 이런식으로  -->
