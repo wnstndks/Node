@@ -48,28 +48,29 @@
     <script>
 
 
-      document.querySelectorAll('.delete')[0].addEventListener('click', function () {
+      for (var i = 0; i < '<%-글목록.length%>'; i++) {
+        document.querySelectorAll('.delete')[i].addEventListener('click', function (e) {
 
-        // 서버에 삭제 요청 날리기 - ajax이용 => 새로고침없이도 get요청이용 가능
-        // fetch('/url~~', {
-        //   // 이건 POST요청하는 법
-        //   method : 'POST',
+          // 서버에 삭제 요청 날리기 - ajax이용 => 새로고침없이도 get요청이용 가능
+          // fetch('/url~~', {
+          //   // 이건 POST요청하는 법
+          //   method : 'POST',
 
-        //   // ajax로 데이터요청은 
-        //   header : {
-        //     'Content-Type' : 'application/json'
-        //   },
-        //   body : '데이터전송~~'         
-        // })
+          //   // ajax로 데이터요청은 
+          //   header : {
+          //     'Content-Type' : 'application/json'
+          //   },
+          //   body : '데이터전송~~'         
+          // })
 
 
-        // e.target.dataset.id를 < % = 글목록[0]._id % >이거 대신에 넣어주는게 좋음
-        // script 안에서 ejs 문법은 문자안에 담아야함
-        fetch('/delete?docid=' + '<%=글목록[0]._id %>', {
-          method: 'DELETE',
+          // e.target.dataset.id를 < % = 글목록[0]._id % >이거 대신에 넣어주는게 좋음
+          // script 안에서 ejs 문법은 문자안에 담아야함
+          fetch('/delete?docid=' + e.target.dataset.id, {
+            method: 'DELETE'
+          })
         })
-      })
-
+      }
 
     </script>
 
