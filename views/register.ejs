@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="/main.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body class="grey-bg">
+    
+
+    <%- include('nav.ejs') %>
+
+    <form class="form-box" action="/register" method="post" onsubmit="return validateForm()">
+        <h4>가입</h4>
+        아이디 <input name="username">
+        비번 <input name="password" id="passoword" type="password">
+        비번확인  <input name="password2" id="password2" type="password">
+        <button type="submit">전송</button>
+    </form> 
+
+    <script>
+        function validateForm() {
+        var password = document.getElementById("password").value;
+        var password2 = document.getElementById("password2").value;
+
+        if (password !== password2) {
+            alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            return false; // 폼 전송 중지
+        }
+            return true; // 폼 제출
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>

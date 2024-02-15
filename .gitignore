@@ -23,3 +23,11 @@ dist/*
 build/*
 *.log
 .DS_Store
+
+# Ignore .env file
+.env
+
+# Visual Studio 주석 무시
+*.suo
+*.user
+*.sln.docstates
