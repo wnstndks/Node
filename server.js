@@ -53,7 +53,8 @@ let db;
 //'mongodb사이트에 있던 님들의 DB 접속 URL'
 // new MongoClient(url)
 // .connect()
-connectDB.then((client) => {
+connectDB
+  .then((client) => {
     console.log("DB연결성공");
     db = client.db("forum");
     // 서버 띄우는 코드
@@ -90,13 +91,13 @@ const upload = multer({
 });
 
 //함수 안의 변수들은 파라미터로 입력해서 쓰는게 좋음
-function checkLogin(요청, 응답, next){
+function checkLogin(요청, 응답, next) {
   // 미들웨어 함수에서는 요청, 응답 자유롭게 사용 가능
-  if(!요청.user){
-    응답.send('로그인하세요')
+  if (!요청.user) {
+    응답.send("로그인하세요");
   }
-  next() // 미들웨어 코드실행 끝났으니 다음으로 이동해주세요
-};
+  next(); // 미들웨어 코드실행 끝났으니 다음으로 이동해주세요
+}
 
 // function showTime(요청, 응답, next){
 //   console.log(Date());
@@ -237,13 +238,11 @@ app.post("/add", upload.single("img1"), async (요청, 응답) => {
     } else {
       //글을 DB에 저장
       // 자료는 object 형식으로 넣어야 한다.
-      await db
-        .collection("post")
-        .insertOne({
-          title: 요청.body.title,
-          content: 요청.body.content,
-          img: 요청.file.location,
-        });
+      await db.collection("post").insertOne({
+        title: 요청.body.title,
+        content: 요청.body.content,
+        img: 요청.file.location,
+      });
       // 유저에게 응답 - 서버 기능이 끝나면 => 메시지 또는 특정페이지로 이동시키기
       응답.redirect("/list");
     }
@@ -511,23 +510,23 @@ app.use("/shop", require("./routes/shop.js"));
 
 app.use("/board", require("./routes/board.js"));
 
-
-
-app.get('/search',async(요청,응답)=>{
+app.get("/search", async (요청, 응답) => {
   // console.log(요청.query.val)
-//   let 검색조건 = [{$search : {
-//     index : 'title_index',
-//     text : { query : 요청.query.val , path : 'title' }
-//   }},
-//   // { $sort : {_id : 1 }},
-//   { $limit : 10}
-// ]
+  //   let 검색조건 = [{$search : {
+  //     index : 'title_index',
+  //     text : { query : 요청.query.val , path : 'title' }
+  //   }},
+  //   // { $sort : {_id : 1 }},
+  //   { $limit : 10}
+  // ]
   // 서버는 그 검색어와 일치하는 document 가져옴 + 정규식사용
-  let result = db.collection('post')
-  .find({title:{$regex : 요청.query.val}}).toArray()
+  let result = await db
+    .collection("post")
+    .find({ title: { $regex: 요청.query.val } })
+    .toArray();
   // aggregate는 조건 여러개 쓸수 있음
   // .aggregate([{조건1},{조건2}]).toArray()
 
-  console.log(result);
-  응답.render('search.ejs',{글목록:result});
-})
+  // console.log(result);
+  응답.render("search.ejs", { 글목록: result });
+});
