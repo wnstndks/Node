@@ -328,7 +328,10 @@ app.put("/edit", async (요청, 응답) => {
 app.delete("/delete", async (요청, 응답) => {
   await db
     .collection("post")
-    .deleteOne({ _id: new ObjectId(요청.query.docid) });
+    .deleteOne({
+      _id: new ObjectId(요청.query.docid),
+      user: new ObjectId(요청.user._id),
+    });
   // ajax 요청 사용시 응답.redirect, 응답.render 사용안하는게 나
   응답.send("삭제완료");
 });
@@ -530,3 +533,8 @@ app.get("/search", async (요청, 응답) => {
   // console.log(result);
   응답.render("search.ejs", { 글목록: result });
 });
+
+// 댓글기능
+// 1. 댓글작성 UI에서 전송누르면 댓글전송됨
+// 2. 서버는 댓글받으면 DB에 저장
+// 3. 상세페이지 방문시 댓글가져와서 보여주기
