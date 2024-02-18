@@ -557,11 +557,8 @@ app.get('/detail/:id', async (요청, 응답) => {
 }) 
 
 app.get('/chat/request',async(요청,응답)=>{
-  await db.colleciton('chatroom').insertOne({
-    member : [요청.user._id,new ObjectId(요청.query.writerId)],
-    date:new Date()
-  })
-  응답.redirect('/chat/list')
+  console.log(요청.query)
+  
 })
 
 app.get('/chat/list',async(요청,응답)=>{
