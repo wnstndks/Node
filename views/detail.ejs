@@ -14,19 +14,28 @@
     <%- include('nav.ejs') %>
 
         <div class="detail-bg">
+
             <h2><%- result.title %></h2>
             <p> <%- result.content %></p>
+            <a href="/chat/request?writerId=<%=result.user%>"> 채팅하기</a>
             <img src='<%- result.img %>'></img>
             <hr style="margin-top: 60px">
             <div>
                 <p><strong>작성자</strong> 댓글내용</p>
             </div>
-            <form action="/comment" method="POST">
-                <input name="content">
-                <input name="parentId" value="<%= result._id %>" style="display: none">
-                <button type="submit">댓글작성</button>
-            </form>
 
+            <% for (let i=0; i < result2.length; i++) { %>
+                <p><strong>
+                        <%= result2[i].writer %>
+                    </strong>
+                    <%= result2[i].content %>
+                </p>
+                <% } %>
+                    <form action="/comment" method="POST">
+                        <input name="content">
+                        <input name="parentId" value="<%= result._id %>" style="display: none">
+                        <button type="submit">댓글작성</button>
+                    </form>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"

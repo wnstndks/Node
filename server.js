@@ -270,14 +270,16 @@ app.get("/detail/:id", async (요청, 응답) => {
     // await db.collection('post').findOne(데이터) -이런 데이터 가진 document 1개 찾아옴
     // await db.collection('post').find().toArray 모든 document 다가져옴
     // 요청.params 안에 유저가 입력한 정보가 잘 들어있음
-    let result = await db
-      .collection("post")
-      .findOne({ _id: new ObjectId(요청.params.id) });
+    let result = await db.collection('post').findOne({ _id : new ObjectId(요청.params.id) })
+    let result2 = await db.collection('comment').find({ parentId : new ObjectId(요청.params.id) }).toArray()
+    // let result = await db
+    //   .collection("post")
+    //   .findOne({ _id: new ObjectId(요청.params.id) });
     // 응답.render('detail.ejs') => 같은 페이지 보여주는 거 아닌가?
     if (result == null) {
       응답.status(404).send("이상한 url입력함");
     }
-    응답.render("detail.ejs", { result: result }); //이런식으로 전송할 자료를 보낼수 있음 그래서 아이디별 내용들을 ejs 파일 보낼수 있음
+    응답.render('detail.ejs', {result : result, result2 : result2}) //이런식으로 전송할 자료를 보낼수 있음 그래서 아이디별 내용들을 ejs 파일 보낼수 있음
   } catch (e) {
     console.log(e);
     // status(5xx) - 서버문제, status(4xx) - 유저문
@@ -538,3 +540,31 @@ app.get("/search", async (요청, 응답) => {
 // 1. 댓글작성 UI에서 전송누르면 댓글전송됨
 // 2. 서버는 댓글받으면 DB에 저장
 // 3. 상세페이지 방문시 댓글가져와서 보여주기
+app.post('/comment', async (요청, 응답)=>{
+  let result = await db.collection('comment').insertOne({
+    content : 요청.body.content,
+    writerId : new ObjectId(요청.user._id),
+    writer : 요청.user.username,
+    parentId : new ObjectId(요청.body.parentId)
+  })
+  응답.redirect('back')
+}) 
+
+app.get('/detail/:id', async (요청, 응답) => {
+  let result = await db.collection('post').findOne({ _id : new ObjectId(요청.params.id) })
+  let result2 = await db.collection('comment').find({ parentId : new ObjectId(요청.params.id) }).toArray()
+  응답.render('detail.ejs', {result : result, result2 : result2})
+}) 
+
+app.get('/chat/request',async(요청,응답)=>{
+  await db.colleciton('chatroom').insertOne({
+    member : [요청.user._id,new ObjectId(요청.query.writerId)],
+    date:new Date()
+  })
+  응답.redirect('/chat/list')
+})
+
+app.get('/chat/list',async(요청,응답)=>{
+  await db.collection('chatroom').find().toArray()
+  응답.render('chatlist.ejs')
+})
