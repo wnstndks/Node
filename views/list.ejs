@@ -21,12 +21,13 @@
     1. input과 버튼에서 서버로 검색어 전송하면
     2. 서버는 그 검색어와 일치하는 document 가져와서
     3.ejs에 넣어서 유저에게 보내기 -->
-
-    <input class="search">
-    <button class="search-send">검색</button>
+    <div style="padding:20px;">
+      <input class="search">
+      <button class="search-send">검색</button>
+    </div>
 
     <script>
-      document.querySelector('.search-send').addEventListener('click', function(){
+      document.querySelector('.search-send').addEventListener('click', function () {
         let 입력한거 = document.querySelector('.search').value
         location.href = '/search?val=' + 입력한거
       })

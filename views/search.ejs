@@ -13,8 +13,10 @@
 <body class="grey-bg">
 
   <%- include('nav.ejs') %>
-    <input class="search">
-    <button class="search-send">검색</button>
+    <div style="padding:20px;">
+      <input class="search">
+      <button class="search-send">검색</button>
+    </div>
 
     <script>
       document.querySelector('.search-send').addEventListener('click', function () {
@@ -23,7 +25,7 @@
       })
     </script>
 
-    <h4>검색결과</h4>
+    <h4 style="clear:both; text-align:center">검색결과</h4>
 
     <div class="white-bg" style="clear:both;">
       <% for (let i=0; i<글목록.length; i++){%>
