@@ -60,7 +60,7 @@ connectDB
     // 서버 띄우는 코드
     // port가 뭐냐면? 누가 내 컴퓨터에 접속할 수 있게 하기 위한 것
     // 누군가가 내 IP 주소를 입력 후 port 번호를 입력시 볼 수 있음
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log("http://localhost:8080 에서 서버 실행중");
     });
   })
@@ -576,13 +576,42 @@ app.get("/detail/:id", async (요청, 응답) => {
 
 app.get("/chat/request", async (요청, 응답) => {
   await db.collection("chatroom").insertOne({
-    member: [요청.user._id, new ObjectId(요청.query.writerId)],
+    member: [new ObjectId(요청.user._id), new ObjectId(요청.query.writerId)],
     date: new Date(),
   });
   응답.redirect("/chat/list");
 });
 
 app.get("/chat/list", async (요청, 응답) => {
-  await db.collection("chatroom").find().toArray();
-  응답.render("chatlist.ejs");
+  let result = await db
+    .collection("chatroom")
+    .find({
+      member: new ObjectId(요청.user._id),
+    })
+    .toArray();
+  응답.render("chatList.ejs", { result: result });
+});
+
+app.get("/chat/detail/:id", async (요청, 응답) => {
+  let result = await db.collection("chatroom").findOne({ _id: 요청.params.id });
+  응답.render("chatDetail.ejs", { result: result });
+});
+
+io.on("connection", (socket) => {
+  console.log("어떤놈이 소켓시작함");
+  // 유저 -> 서버메세지 전송은 socket.emit('데이터이름', '데이터')
+  // 데이터수신하려면 socket.on()
+  // [서버->모든유저]데이터전송은 io.emit()
+
+  // 실시간 채팅기능? -유저 ->서버 메세지 보내면 -서버는 모든 유저에게 메세지 뿌려줌
+  // room 기능 - 유저들 들어갈수 있는 웹소켓 방 한유저는 여러 room에 들어갈수 잇음
+  //  서버 -> room 에 속한 유저 메세지 전송가능
+
+  // 유저를 room으로 보내려면 socket.join(룸이름)
+
+  socket.join("룸이름");
+
+  // 유저가 특정 룸에 메세지 보내려면?
+  // 1. 서버에게 룸에 메세지 전달하라고 부탁 
+  // 2. 서버는 부탁받으면 메시지 수신시 룸에 전달
 });
