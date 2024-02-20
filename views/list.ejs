@@ -101,20 +101,20 @@
         })
       }
 
-      fetch('/URL')
-        .then((r) => {
-          if (r.status == 200) {
-            return r.json()
-          } else {
-            //서버가 에러코드전송시 실행할코드
-          }
-        })
-        .then((result) => {
-          //성공시 실행할코드
-        }).catch((error) => {
-          //인터넷문제 등으로 실패시 실행할코드
-          console.log(error)
-        })
+      // fetch('/URL')
+      //   .then((r) => {
+      //     if (r.status == 200) {
+      //       return r.json()
+      //     } else {
+      //       //서버가 에러코드전송시 실행할코드
+      //     }
+      //   })
+      //   .then((result) => {
+      //     //성공시 실행할코드
+      //   }).catch((error) => {
+      //     //인터넷문제 등으로 실패시 실행할코드
+      //     console.log(error)
+      //   })
     </script>
 
     <!-- 서버로 데이터보내는 방법 - form, ajax, query string, URL parameter - server에서 :id 이런식으로  -->
@@ -124,7 +124,15 @@
     },
         }) -->
 
-
+    <script>
+      // server sent event 연결을 원하면 new EventSource('/URL')
+      let eventSource = new EventSource('stream/list')
+      eventSource.addEventListener('msg',function(e){
+        console.log(e.data)
+        document.querySelector('white-bg').insertAdjacentElement
+        ('afterbegin','<div class=list-box'><h4>${e.data.title}</h4></div>)
+      })
+    </script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"

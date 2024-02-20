@@ -47,7 +47,7 @@ const { MongoClient, ObjectId } = require("mongodb");
 
 // connectDB 가져오기
 let connectDB = require("./database.js");
-
+let changeStream
 let db;
 // const url = process.env.DB_URL;
 //'mongodb사이트에 있던 님들의 DB 접속 URL'
@@ -57,10 +57,17 @@ connectDB
   .then((client) => {
     console.log("DB연결성공");
     db = client.db("forum");
+    
+    
+    let 조건 = [
+      { $match: { operationType: "insert" } }
+    ];
+  
+    changeStream=db.collection('post').watch(조건)
     // 서버 띄우는 코드
     // port가 뭐냐면? 누가 내 컴퓨터에 접속할 수 있게 하기 위한 것
     // 누군가가 내 IP 주소를 입력 후 port 번호를 입력시 볼 수 있음
-    server.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT, () => {
       console.log("http://localhost:8080 에서 서버 실행중");
     });
   })
@@ -597,21 +604,55 @@ app.get("/chat/detail/:id", async (요청, 응답) => {
   응답.render("chatDetail.ejs", { result: result });
 });
 
-io.on("connection", (socket) => {
-  console.log("어떤놈이 소켓시작함");
-  // 유저 -> 서버메세지 전송은 socket.emit('데이터이름', '데이터')
-  // 데이터수신하려면 socket.on()
-  // [서버->모든유저]데이터전송은 io.emit()
+// io.on("connection", (socket) => {
+//   console.log("어떤놈이 소켓시작함");
+//   // 유저 -> 서버메세지 전송은 socket.emit('데이터이름', '데이터')
+//   // 데이터수신하려면 socket.on()
+//   // [서버->모든유저]데이터전송은 io.emit()
 
-  // 실시간 채팅기능? -유저 ->서버 메세지 보내면 -서버는 모든 유저에게 메세지 뿌려줌
-  // room 기능 - 유저들 들어갈수 있는 웹소켓 방 한유저는 여러 room에 들어갈수 잇음
-  //  서버 -> room 에 속한 유저 메세지 전송가능
+//   // 실시간 채팅기능? -유저 ->서버 메세지 보내면 -서버는 모든 유저에게 메세지 뿌려줌
+//   // room 기능 - 유저들 들어갈수 있는 웹소켓 방 한유저는 여러 room에 들어갈수 잇음
+//   //  서버 -> room 에 속한 유저 메세지 전송가능
 
-  // 유저를 room으로 보내려면 socket.join(룸이름)
+//   // 유저를 room으로 보내려면 socket.join(룸이름)
 
-  socket.join("룸이름");
+//   socket.join("룸이름");
 
-  // 유저가 특정 룸에 메세지 보내려면?
-  // 1. 서버에게 룸에 메세지 전달하라고 부탁 
-  // 2. 서버는 부탁받으면 메시지 수신시 룸에 전달
+//   // 유저가 특정 룸에 메세지 보내려면?
+//   // 1. 서버에게 룸에 메세지 전달하라고 부탁
+//   // 2. 서버는 부탁받으면 메시지 수신시 룸에 전달
+// });
+
+// 서버에서 sse를 써도 서버에서 실시간으로 데이터 전송가능
+// http 요청을 보내면 원래 서버가 응답하면 연결 끊김 - 이걸 끊지않고 유지한 상태로 응답할수 있음
+// header를 connection: keep-alive로 설정
+// 응답.write(전송할 데이터)
+// http 요청을 주고 받을때 유저가 쓰는 브라우저 os 언어 쿠키등이 서버로 전달이 됨 서버에서 응답을 해줄때에도 부가정보들이 나옴
+
+app.get("/stream/list", (요청, 응답) => {
+  응답.writeHead(200, {
+    Connection: "keep-alive",
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+  });
+
+  // 유저가 요청안해도 서버 마음대로 데이터를 전송가능
+  // setInterval(() => {
+  //   // 응답.write는 최소 두개을 써야함 -형식에 맞춰야 데이터가 잘감
+  //   // array, object도 json으로 바꾸면 전송가능
+  //   응답.write("event: msg\n");
+  //   응답.write("data: 바보\n\n");
+  // }, 1000);
+
+  응답.write("event: msg\n");
+  응답.write("data: 바보\n\n");
+
+  
+  // change stream - mongodb의 server sent stream : DB 변동사항을 실시간으로 서버에 알려줌
+  let changeStream = db.collection("post").watch();
+  changeStream.on("change", (result) => {
+    // 방금 추가된 document 내용이 궁금하면?
+    // insert 되는 경우만 감지하고 싶은데?
+    console.log(result.fullDocument);
+  });
 });
