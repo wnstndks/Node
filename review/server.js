@@ -18,9 +18,7 @@ new MongoClient(url).connect().then((client)=>{
 }).catch((err)=>{
   console.log(err)
 })
-app.listen(8080, () => {
-  console.log('http://localhost:8080 에서 서버 실행중')
-})
+
 app.get('/', (요청, 응답) => {
   응답.sendFile(__dirname+'/main.html')
 }) 
@@ -28,6 +26,11 @@ app.get('/', (요청, 응답) => {
 
 // 새로운 페이지 만들고 싶을 때
 app.get('/news',(req,res)=>{
-    // db.collection('reviewpost').insertOne({title:'시작'})
-    req.send('오늘부터 다시 node 시작해서 재밌다.')
+    db.collection('reviewpost').insertOne({title:'시작',content:'이게node다'})
+    // req.send('오늘부터 다시 node 시작해서 재밌다.')
+})
+
+app.get('/list',async(req,res)=>{
+  let result= await db.collection('reviewpost').find().toArray()
+  res.send(result[1].content)
 })
