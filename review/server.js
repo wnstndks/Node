@@ -44,3 +44,8 @@ app.get("/list", async(req, res) => {
   let result= await db.collection('reviewpost').find().toArray()
   res.render("list.ejs",{글목록: result});
 });
+
+app.get('/time',async(req,res)=>{
+  let time= new Date()
+  res.render('time.ejs',{시간:time})
+})
