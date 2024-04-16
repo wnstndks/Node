@@ -11,17 +11,24 @@
 </head>
 
 <body class="grey-bg">
-    <%=글목록%>
-    <div class="white-bg">
-        <div class="list-box">
-            <h4><%= 글목록[0].title %></h4>
-            <p><%= 글목록[0].content %></p>
-        </div>
-        <div class="list-box">
-            <h4><%= 글목록[1].title %></h4>
-            <p><%= 글목록[1].content %></p>
-        </div>
+    <!-- <%=글목록%> -->
+    <div class="white-box">
+        <%- include('nav.ejs') %>
+
+            <% for (let i=0; i<글목록.length; i++){%>
+                <div class="list-box">
+                    <h4>
+                        <%= 글목록[i].title %>
+                    </h4>
+                    <p>
+                        <%= 글목록[i].content%>
+                    </p>
+                </div>
+                <%}%>
     </div>
+    <!-- <%- %>는 그 안에 들어있는게 html인 경우 그걸 실제로 렌더링
+         <%= %>는 일반 문자처럼 보여줌
+    -->
 
 </body>
 
