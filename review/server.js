@@ -3,6 +3,11 @@ const app = express();
 app.use(express.static(__dirname + "/public"));
 // ejs 세팅 - 템플릿 엔진 쓰기위함 -> html 파일안에 데이터들을 꽂을수 있음
 app.set("view engine", "ejs");
+// 유저가 보낸 정보를 서버에서 쉽게 출력하기 위한 환경설정
+app.use(express.json())
+app.use(express.urlencoded({extended:true})) 
+
+
 const { MongoClient } = require("mongodb");
 
 let db;
@@ -49,3 +54,12 @@ app.get('/time',async(req,res)=>{
   let time= new Date()
   res.render('time.ejs',{시간:time})
 })
+
+app.get('/write', (요청, 응답)=>{
+  응답.render('write.ejs')
+}) 
+
+app.post('/add',(요청,응답)=>{
+  console.log(요청.body)
+})
+
