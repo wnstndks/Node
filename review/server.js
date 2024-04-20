@@ -70,7 +70,16 @@ app.post("/add", async (req, res) => {
   }
 });
 
-app.get('/detail/:aaaa',async(req,res)=>{
-  let result= await db.collection('reviewpost').findOne({_id : new ObjectId('661ba1b80035dbb97403e718')})
-  res.render('detail.ejs')
+app.get('/detail/:id', async (req, res) => {
+  try{
+    let result= await db.collection('reviewpost').findOne({_id : new ObjectId(req.params.id)})
+    if (result==null){
+      res.status(400).send('그런글 없다')
+    }else{
+      res.render('detail.ejs',{result:result})
+    }
+  }catch(e){
+    res.status(400).send('이상한 url 입력')
+  } 
+  
 })

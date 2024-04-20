@@ -4,23 +4,30 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="../main.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="../main.css" rel="stylesheet">
 </head>
 
 <body class="grey-bg">
-    <!-- <%=글목록%> -->
-    <%- include('nav.ejs') %>
+  <!-- <%=글목록%> -->
+  <%- include('nav.ejs') %>
     <div class="white-bg">
-        <% for (let i=0; i<글목록.length; i++){%>
+      <% for (let i=0; i<글목록.length; i++){%>
         <div class="list-box">
-          <h4><%= 글목록[i].title %></h4>
-          <p><%= 글목록[i].content%></p>
+          <h4>
+            <a href="/detail/<%=글목록[i]._id%>">
+              <%= 글목록[i].title %>
+            </a>
+          </h4>
+          </a>
+          <p>
+            <%= 글목록[i].content%>
+          </p>
         </div>
         <%}%>
-      </div>
+    </div>
     <!-- <%- %>는 그 안에 들어있는게 html인 경우 그걸 실제로 렌더링
          <%= %>는 일반 문자처럼 보여줌
     -->
