@@ -73,6 +73,7 @@ app.post("/add", async (req, res) => {
 app.get('/detail/:id', async (req, res) => {
   try{
     let result= await db.collection('reviewpost').findOne({_id : new ObjectId(req.params.id)})
+    console.log(result)
     if (result==null){
       res.status(400).send('그런글 없다')
     }else{
@@ -82,4 +83,10 @@ app.get('/detail/:id', async (req, res) => {
     res.status(400).send('이상한 url 입력')
   } 
   
+})
+
+app.get('/edit/:id',async(req,res)=>{
+  let result= await db.collection('reviewpost').findOne({_id : new ObjectId(req.params.id)})
+  console.log(result)
+  res.render('edit.ejs',{result:result})
 })
