@@ -6,8 +6,8 @@ app.set("view engine", "ejs");
 // 유저가 보낸 정보를 서버에서 쉽게 출력하기 위한 환경설정
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-const { MongoClient } = require("mongodb");
+// objectId 사용
+const { MongoClient, ObjectId } = require("mongodb");
 
 let db;
 const url =
@@ -69,3 +69,8 @@ app.post("/add", async (req, res) => {
     res.redirect("/list");
   }
 });
+
+app.get('/detail/:aaaa',async(req,res)=>{
+  let result= await db.collection('reviewpost').findOne({_id : new ObjectId('661ba1b80035dbb97403e718')})
+  res.render('detail.ejs')
+})
