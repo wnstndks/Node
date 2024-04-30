@@ -112,20 +112,19 @@ app.post("/edit", async (req, res) => {
         { _id: new ObjectId(req.body.id) },
         { $set: { title: req.body.title, content: req.body.content } }
       );
+
       console.log(result)
-      
+
       if(req.body.content==''){
-        res.status(400).send('빈칸이다 채워라')
+        res.send('빈칸이다 채워라')
       }else if(req.body.content.length>=100){
-        res.status(400).send('너무 길다 지워라')
+        res.send('너무 길다 지워라')
       }
       else {
          res.redirect("/");
       }
   } catch (e) {
     console.log(e)
-    
     res.status(400).send("수정 실패");
   }
- 
 });
