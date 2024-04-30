@@ -10,7 +10,7 @@
 
 <body>
     <%- include('nav.ejs') %>
-    <form action="/edit" class="form-box" method="POST">
+    <form action="/edit?_method=PUT" method="POST">
         <h4>수정하기</h4>
         <input name="id" value="<%=result._id%>" style="display:none">
         <input name="title" value="<%= result.title %>">

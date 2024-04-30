@@ -6,6 +6,11 @@ app.set("view engine", "ejs");
 // 유저가 보낸 정보를 서버에서 쉽게 출력하기 위한 환경설정
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 메소드 강제변환
+const methodOverride = require('method-override')
+app.use(methodOverride('_method')) 
+
 // objectId 사용
 const { MongoClient, ObjectId } = require("mongodb");
 
@@ -110,6 +115,7 @@ app.post("/edit", async (req, res) => {
       .collection("reviewpost")
       .updateOne(
         { _id: new ObjectId(req.body.id) },
+        // $set 쓰면 기존 값 덮어쓰기 만약 싫다면 $inc 를 통해 더하기
         { $set: { title: req.body.title, content: req.body.content } }
       );
 
