@@ -100,12 +100,12 @@ app.get("/edit/:id", async (req, res) => {
 });
 
 
-app.post('/edit', async (요청, 응답)=>{
-  await db.collection('reviewpost').updateOne({ _id : new ObjectId(요청.body.id) },
-    {$set : { title : 요청.body.title, content : 요청.body.content }
-  })
-  응답.redirect('/')
-}) 
+// app.post('/edit', async (요청, 응답)=>{
+//   await db.collection('reviewpost').updateOne({ _id : new ObjectId(요청.body.id) },
+//     {$set : { title : 요청.body.title, content : 요청.body.content }
+//   })
+//   응답.redirect('/')
+// }) 
 
 
 
@@ -132,5 +132,16 @@ app.post("/edit", async (req, res) => {
   } catch (e) {
     console.log(e)
     res.status(400).send("수정 실패");
+  }
+});
+
+
+app.get('/delete/:id', async (req, res) => {
+  try {
+    await db.collection('reviewpost').deleteOne({ _id: new ObjectId(req.params.id) });
+    res.redirect('/');
+  } catch (e) {
+    console.log(e);
+    res.status(400).send("삭제 실패");
   }
 });
