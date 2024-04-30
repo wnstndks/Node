@@ -59,7 +59,6 @@ app.get("/write", (req, res) => {
 });
 
 app.post("/add", async (req, res) => {
-  
   if (req.body.title == "") {
     res.send("제목입력요함");
   } else {
@@ -70,27 +69,63 @@ app.post("/add", async (req, res) => {
   }
 });
 
-app.get('/detail/:id', async (req, res) => {
-  try{
-    let result= await db.collection('reviewpost').findOne({_id : new ObjectId(req.params.id)})
-    console.log(result)
-    if (result==null){
-      res.status(400).send('그런글 없다')
-    }else{
-      res.render('detail.ejs',{result:result})
+app.get("/detail/:id", async (req, res) => {
+  try {
+    let result = await db
+      .collection("reviewpost")
+      .findOne({ _id: new ObjectId(req.params.id) });
+    console.log(result);
+    if (result == null) {
+      res.status(400).send("그런글 없다");
+    } else {
+      res.render("detail.ejs", { result: result });
     }
-  }catch(e){
-    res.status(400).send('이상한 url 입력')
-  } 
-  
-})
+  } catch (e) {
+    res.status(400).send("이상한 url 입력");
+  }
+});
 
-app.get('/edit/:id',async(req,res)=>{
-  
+app.get("/edit/:id", async (req, res) => {
+  let result = await db
+    .collection("reviewpost")
+    .findOne({ _id: new ObjectId(req.params.id) });
+  // console.log(result);
+
+  res.render("edit.ejs", { result: result });
+});
+
+
+app.post('/edit', async (요청, 응답)=>{
+  await db.collection('reviewpost').updateOne({ _id : new ObjectId(요청.body.id) },
+    {$set : { title : 요청.body.title, content : 요청.body.content }
+  })
+  응답.redirect('/')
+}) 
 
 
 
-  let result= await db.collection('reviewpost').findOne({_id : new ObjectId(req.params.id)})
-  console.log(result)
-  res.render('edit.ejs',{result:result})
-})
+app.post("/edit", async (req, res) => {
+  try {
+    let result = await db
+      .collection("reviewpost")
+      .updateOne(
+        { _id: new ObjectId(req.body.id) },
+        { $set: { title: req.body.title, content: req.body.content } }
+      );
+      console.log(result)
+      
+      if(req.body.content==''){
+        res.status(400).send('빈칸이다 채워라')
+      }else if(req.body.content.length>=100){
+        res.status(400).send('너무 길다 지워라')
+      }
+      else {
+         res.redirect("/");
+      }
+  } catch (e) {
+    console.log(e)
+    
+    res.status(400).send("수정 실패");
+  }
+ 
+});
