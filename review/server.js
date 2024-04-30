@@ -26,7 +26,7 @@ new MongoClient(url)
     console.log(err);
   });
 
-app.get("/", (요청, 응답) => {
+app.get("/main", (요청, 응답) => {
   응답.sendFile(__dirname + "/main.html");
 });
 
@@ -44,7 +44,7 @@ app.get("/post", async (req, res) => {
   res.send(result[1].content);
 });
 
-app.get("/list", async (req, res) => {
+app.get("/", async (req, res) => {
   let result = await db.collection("reviewpost").find().toArray();
   res.render("list.ejs", { 글목록: result });
 });
@@ -86,6 +86,10 @@ app.get('/detail/:id', async (req, res) => {
 })
 
 app.get('/edit/:id',async(req,res)=>{
+  
+
+
+
   let result= await db.collection('reviewpost').findOne({_id : new ObjectId(req.params.id)})
   console.log(result)
   res.render('edit.ejs',{result:result})
