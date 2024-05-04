@@ -70,7 +70,7 @@ app.post("/add", async (req, res) => {
     await db
       .collection("reviewpost")
       .insertOne({ title: req.body.title, content: req.body.content });
-    res.redirect("/list");
+    res.redirect("/");
   }
 });
 
