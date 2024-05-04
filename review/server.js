@@ -136,12 +136,12 @@ app.post("/edit", async (req, res) => {
 });
 
 
-app.get('/delete/:id', async (req, res) => {
-  try {
-    await db.collection('reviewpost').deleteOne({ _id: new ObjectId(req.params.id) });
-    res.redirect('/');
-  } catch (e) {
-    console.log(e);
-    res.status(400).send("삭제 실패");
-  }
-});
+// app.get('/delete/:id', async (req, res) => {
+//   try {
+//     await db.collection('reviewpost').deleteOne({ _id: new ObjectId(req.params.id) });
+//     res.redirect('/');
+//   } catch (e) {
+//     console.log(e);
+//     res.status(400).send("삭제 실패");
+//   }
+// });

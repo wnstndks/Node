@@ -30,10 +30,31 @@
         </div>
         <%}%>
     </div>
+    <script>
+  //  모든 에러상황 다 할수있음
+      // fetch('/URL')
+      //   .then((r) => {
+      //     if (r.status == 200) {
+      //       return r.json()
+      //     } else {
+      //       //서버가 에러코드전송시 실행할코드
+      //     }
+      //   })
+      //   .then((result) => {
+      //     //성공시 실행할코드
+      //   }).catch((error) => {
+      //     //인터넷문제 등으로 실패시 실행할코드
+      //     console.log(error)
+      //   })
+    </script>
+
+    
+
     <!-- <%- %>는 그 안에 들어있는게 html인 경우 그걸 실제로 렌더링
          <%= %>는 일반 문자처럼 보여줌
     -->
-
+    <!-- axios 문법이용해서 다 할수 있는 것 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </body>
 
 </html>
