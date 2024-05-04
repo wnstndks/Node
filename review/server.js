@@ -145,3 +145,9 @@ app.post("/edit", async (req, res) => {
 //     res.status(400).send("삭제 실패");
 //   }
 // });
+
+
+app.get("/next/:id", async (req, res) => {
+  let result = await db.collection("reviewpost").find({_id:{$gt: new ObjectId(req.params._id)}}).limit(5).toArray();
+  res.render("list.ejs", { 글목록: result });
+});
