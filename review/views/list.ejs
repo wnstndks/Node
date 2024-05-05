@@ -31,14 +31,18 @@
         <%}%>
     </div>
 
-    <% for (let j=0; j<Math.ceil(글목록.length/5); j++) { %>
-      <div class="page">
-        <button class="bt"><%= j+1 %></button>
-      </div>
-    <% } %>
-  
+    <div style="display:flex; justify-content: center;">
+      <% for (let j=0; j<Math.ceil(글목록.length/5); j++) { %>
+        <div class="page" style="display:flex;">
+          <button class="bt">
+            <%= j+1 %>
+          </button>
+        </div>
+        <% } %>
+    </div>
+
     <script>
-  //  모든 에러상황 다 할수있음
+      //  모든 에러상황 다 할수있음
       // fetch('/URL')
       //   .then((r) => {
       //     if (r.status == 200) {
@@ -55,7 +59,7 @@
       //   })
     </script>
 
-    
+
 
     <!-- <%- %>는 그 안에 들어있는게 html인 경우 그걸 실제로 렌더링
          <%= %>는 일반 문자처럼 보여줌

@@ -74,8 +74,12 @@ input,div {
   margin-top: 10px;
 }
 
-.page {
-  margin: 1px;
-  display: flex;
-  
+.bt{
+  margin-left: 10px;
+  width: 50px;
+  height: 30px;
+  color:white;
+  background-color: rgb(64, 66, 223);
+  border:none;
+  border-radius: 5px;
 }

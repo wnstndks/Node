@@ -150,15 +150,21 @@ app.post("/edit", async (req, res) => {
 app.get("/next/:pageNum", async (req, res) => {
   const pageNum = parseInt(req.params.pageNum);
   const perPage = 5; // 한 페이지에 보여줄 글의 수
+  let result;
 
-  // 해당 페이지에 해당하는 시작 위치 계산
-  const startIdx = (pageNum - 1) * perPage;
+  // 데이터베이스 종류에 따라 쿼리를 수정
+  // 여기서는 MongoDB를 사용하는 경우를 가정
+  try {
+    const startIdx = (pageNum - 1) * perPage;
+    result = await db.collection("reviewpost")
+                   .find({})
+                   .skip(startIdx)
+                   .limit(perPage)
+                   .toArray();
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    result = []; // 에러 발생 시 빈 배열 반환
+  }
 
-  let result = await db.collection("reviewpost")
-                     .find({})
-                     .skip(startIdx)
-                     .limit(perPage)
-                     .toArray();
-                     
   res.render("list.ejs", { 글목록: result });
 });
