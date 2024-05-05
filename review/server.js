@@ -147,7 +147,18 @@ app.post("/edit", async (req, res) => {
 // });
 
 
-app.get("/next/:id", async (req, res) => {
-  let result = await db.collection("reviewpost").find({_id:{$gt: new ObjectId(req.params._id)}}).limit(5).toArray();
+app.get("/next/:pageNum", async (req, res) => {
+  const pageNum = parseInt(req.params.pageNum);
+  const perPage = 5; // 한 페이지에 보여줄 글의 수
+
+  // 해당 페이지에 해당하는 시작 위치 계산
+  const startIdx = (pageNum - 1) * perPage;
+
+  let result = await db.collection("reviewpost")
+                     .find({})
+                     .skip(startIdx)
+                     .limit(perPage)
+                     .toArray();
+                     
   res.render("list.ejs", { 글목록: result });
 });

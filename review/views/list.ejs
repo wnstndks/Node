@@ -29,10 +29,14 @@
           </p>
         </div>
         <%}%>
-
-
     </div>
-    <a href="/next/<%=글목록[글목록.length-1]._id"%>다음</a>
+
+    <% for (let j=0; j<Math.ceil(글목록.length/5); j++) { %>
+      <div class="page">
+        <button class="bt"><%= j+1 %></button>
+      </div>
+    <% } %>
+  
     <script>
   //  모든 에러상황 다 할수있음
       // fetch('/URL')
