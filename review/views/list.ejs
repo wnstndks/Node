@@ -13,8 +13,9 @@
 <body class="grey-bg">
   <!-- <%=글목록%> -->
   <%- include('nav.ejs') %>
+    <!-- 리스트 출력 -->
     <div class="white-bg">
-      <% for (let i=0; i<글목록.length; i++){%>
+      <% for (let i=(pageNum-1)*perPage; i<Math.min(pageNum*perPage, 글목록.length); i++){ %>
         <div class="list-box">
           <h4>
             <a href="/detail/<%=글목록[i]._id%>">
@@ -23,23 +24,24 @@
             <a href="/edit/<%=글목록[i]._id%>">✏️</a>
             <a href="/delete/<%=글목록[i]._id%>">🗑️</a>
           </h4>
-          </a>
           <p>
             <%= 글목록[i].content%>
           </p>
         </div>
-        <%}%>
+        <% } %>
     </div>
 
+    <!-- 페이지네이션 -->
     <div style="display:flex; justify-content: center;">
-      <% for (let j=0; j<Math.ceil(글목록.length/5); j++) { %>
+      <% for (let j=0; j<Math.ceil(글목록.length/perPage); j++) { %>
         <div class="page" style="display:flex;">
-          <button class="bt">
+          <a href="/<%=j+1%>" class="bt">
             <%= j+1 %>
-          </button>
+          </a>
         </div>
         <% } %>
     </div>
+
 
     <script>
       //  모든 에러상황 다 할수있음

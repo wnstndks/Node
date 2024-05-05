@@ -50,8 +50,9 @@ app.get("/post", async (req, res) => {
 });
 
 app.get("/", async (req, res) => {
+  const perPage = 5; // 한 페이지에 보여줄 글의 수
   let result = await db.collection("reviewpost").find().toArray();
-  res.render("list.ejs", { 글목록: result });
+  res.render("list.ejs", { 글목록: result, pageNum: 1, perPage: perPage });
 });
 
 app.get("/time", async (req, res) => {
@@ -147,7 +148,7 @@ app.post("/edit", async (req, res) => {
 // });
 
 
-app.get("/next/:pageNum", async (req, res) => {
+app.get("/:pageNum", async (req, res) => {
   const pageNum = parseInt(req.params.pageNum);
   const perPage = 5; // 한 페이지에 보여줄 글의 수
   let result;
@@ -166,5 +167,5 @@ app.get("/next/:pageNum", async (req, res) => {
     result = []; // 에러 발생 시 빈 배열 반환
   }
 
-  res.render("list.ejs", { 글목록: result });
+  res.render("list.ejs", { 글목록: result, pageNum: pageNum, perPage: perPage });
 });
