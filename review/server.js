@@ -59,6 +59,7 @@ new MongoClient(url)
 
 app.get("/", (요청, 응답) => {
   응답.sendFile(__dirname + "/main.html");
+  // 응답.send('nodejs 시작')
 });
 
 // 새로운 페이지 만들고 싶을 때
